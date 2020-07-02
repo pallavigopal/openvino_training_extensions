@@ -44,13 +44,15 @@
 
 ## XNLI
 
-### Fine-Tuning
+### Fine tuning
 
-Download the pre-trained Bert-base chinese model
+1. Download the pre-trained Bert-base chinese model
     ```bash
     $ wget https://storage.googleapis.com/bert_models/2018_11_03/chinese_L-12_H-768_A-12.zip
     ```
-Refer the [Fine-tuning Example section](https://github.com/google-research/bert/blob/master/multilingual.md) for the data set and finetuning
+
+2. Refer the [Fine-tuning Example section](https://github.com/google-research/bert/blob/master/multilingual.md) for the data set and finetuning.
+
     ```bash
     $ export BERT_BASE_DIR=/path/to/bert/chinese_L-12_H-768_A-12
     $ export XNLI_DIR=/path/to/xnli_dataset
@@ -67,7 +69,9 @@ Refer the [Fine-tuning Example section](https://github.com/google-research/bert/
       --num_train_epochs=2.0 \
       --output_dir=/tmp/xnli_output/
     ```
+
 ### Evaluation
+
     ```bash
     $ python $WORK_DIR/bert/run_classifier.py \
       --task_name=XNLI \
@@ -82,10 +86,13 @@ Refer the [Fine-tuning Example section](https://github.com/google-research/bert/
       --num_train_epochs=2.0 \
       --output_dir=/tmp/xnli_output/
     ```
+
 ### Results
+
    Accuracy = 0.774116
 
 ### Export to OpenVino IR
+
     ```bash
     $ cp xnli_export.py $WORK_DIR/bert/
     $ python $WORK_DIR/bert/xnli_export.py \
@@ -99,14 +106,18 @@ Refer the [Fine-tuning Example section](https://github.com/google-research/bert/
       --output_dir=/tmp/xnli_output \
       --export_dir=/tmp/xnli_output/export_model
     ```
+
 #### Frozen Graph
+
     ```bash
     $ python3 -m tensorflow.python.tools.freeze_graph \
       --input_saved_model_dir=/tmp/xnli_output/export_model/<saved model folder>/ \
       --output_graph=./bert_xnli_fp32_graph.pb \
       --output_node_names=loss/LogSoftmax
     ```
+
 #### OpenVino Intermediate Representation
+
     ```bash
     $ python mo.py --framework=tf \
       --input='input_ids_1,input_mask_1,segment_ids_1' \
@@ -121,13 +132,19 @@ Refer the [Fine-tuning Example section](https://github.com/google-research/bert/
 ## BERT-Base, Uncased with SQuAD 1.1
 
 ### Data-set
+
 First download the Standford Question Answering Dataset(SQuAD1.1) to some directory $SQUAD_DIR
+
+    ```bash
     * [train-v1.1.json](https://rajpurkar.github.io/SQuAD-explorer/dataset/train-v1.1.json)
     * [dev-v1.1.json](https://rajpurkar.github.io/SQuAD-explorer/dataset/dev-v1.1.json)
     * [evaluate-v1.1.py](https://github.com/allenai/bi-att-flow/blob/master/squad/evaluate-v1.1.py)
+    ```
 
 ### Fine-tuning
+
 Download the Pre-trained Bert base uncased model
+
     ```bash
     $ wget https://storage.googleapis.com/bert_models/2018_10_18/uncased_L-12_H-768_A-12.zip
     $ export BERT_BASE_DIR=/path/to/bert/uncased_L-12_H-768_A-12
@@ -147,6 +164,7 @@ Download the Pre-trained Bert base uncased model
     ```
 
 ### Evaluation
+
     ```bash
     $ python $WORK_DIR/bert/run_squad.py \
       --vocab_file=$BERT_BASE_DIR/vocab.txt \
@@ -161,17 +179,22 @@ Download the Pre-trained Bert base uncased model
       --doc_stride=128 \
       --output_dir=/tmp/squad_base/
     ```
+
     The dev set predictions will be saved into a file called predictions.json in the output_dir:
     ```bash
     $ python $SQUAD_DIR/evaluate-v1.1.py $SQUAD_DIR/dev-v1.1.json /tmp/squad_base/predictions.json
     ```
+
 ### Results
+
    Accuracy Metrics
     Exact_match: 81.17313150425733
     F1: 88.49906696207893
 
 ### Export to OpenVino IR
+
 Export the saved model from the trained checkpoint
+
     ```bash
     $ cp squad_export.py $WORK_DIR/bert/
     $ python $WORK_DIR/bert/squad_export.py \
@@ -188,14 +211,18 @@ Export the saved model from the trained checkpoint
       --output_dir=/tmp/squad_base/
       --export_dir =/tmp/squad_base/export_model/
     ```
+
 #### Frozen Graph
+
     ```bash
     $ python3 -m tensorflow.python.tools.freeze_graph \
       --input_saved_model_dir=/tmp/squad_base/exported_model/<saved model folder>/ \
       --output_graph=bert_squad_fp32_graph.pb \
       --output_node_names=unstack
     ```
+
 #### OpenVino Intermediate Representation
+
     ```bash
     $ python mo.py --framework=tf \
       --input='input_ids_1,input_mask_1,segment_ids_1' \
@@ -208,6 +235,7 @@ Export the saved model from the trained checkpoint
     ```
 
 ### OpenVino Dataset Annotation and Accuracy check
+
     ```bash
     $ convert_annotation squad \
       --testing_file $SQUAD_DIR/dev-v1.1.json \
@@ -218,6 +246,8 @@ Export the saved model from the trained checkpoint
       --lower_case True \
       -o /output/dir/
     ```
+
     ```bash
     $ accuracy_check --config squad_accuracy_check.yaml
     ```
+
