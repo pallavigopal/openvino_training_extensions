@@ -1,6 +1,4 @@
 # Bert base XNLI and Squad 1.1
-
-## Description
    BERT (Bidirectional Encoder Representations from Transformers) is a new method of pre-training language representations which obtains state-of-the-art	   results on a wide array of Natural Language Processing (NLP) tasks.
    XNLI is the Bert-base Chinese simplified and traditional sentence clasification task with 12-layer, 768-hidden, 12 heads, 110M parameters.
    Squad1.1 is the Bert-base questions answering task with the squad dataset of v1.1
@@ -44,15 +42,15 @@
     $ git clone https://github.com/google-research/bert
     ```
 
-### XNLI
+## XNLI
 
-#### Fine-Tuning
+### Fine-Tuning
 
-   Download the pre-trained Bert-base chinese model
+Download the pre-trained Bert-base chinese model
     ```bash
     $ wget https://storage.googleapis.com/bert_models/2018_11_03/chinese_L-12_H-768_A-12.zip
     ```
-   Refer the [Fine-tuning Example section](https://github.com/google-research/bert/blob/master/multilingual.md) for the data set and finetuning
+Refer the [Fine-tuning Example section](https://github.com/google-research/bert/blob/master/multilingual.md) for the data set and finetuning
     ```bash
     $ export BERT_BASE_DIR=/path/to/bert/chinese_L-12_H-768_A-12
     $ export XNLI_DIR=/path/to/xnli_dataset
@@ -69,7 +67,7 @@
       --num_train_epochs=2.0 \
       --output_dir=/tmp/xnli_output/
     ```
-#### Evaluation
+### Evaluation
     ```bash
     $ python $WORK_DIR/bert/run_classifier.py \
       --task_name=XNLI \
@@ -84,10 +82,10 @@
       --num_train_epochs=2.0 \
       --output_dir=/tmp/xnli_output/
     ```
-#### Results
+### Results
    Accuracy = 0.774116
 
-#### Export to OpenVino IR
+### Export to OpenVino IR
     ```bash
     $ cp xnli_export.py $WORK_DIR/bert/
     $ python $WORK_DIR/bert/xnli_export.py \
@@ -101,14 +99,14 @@
       --output_dir=/tmp/xnli_output \
       --export_dir=/tmp/xnli_output/export_model
     ```
-##### Frozen Graph
+#### Frozen Graph
     ```bash
     $ python3 -m tensorflow.python.tools.freeze_graph \
       --input_saved_model_dir=/tmp/xnli_output/export_model/<saved model folder>/ \
       --output_graph=./bert_xnli_fp32_graph.pb \
       --output_node_names=loss/LogSoftmax
     ```
-##### OpenVino Intermediate Representation
+#### OpenVino Intermediate Representation
     ```bash
     $ python mo.py --framework=tf \
       --input='input_ids_1,input_mask_1,segment_ids_1' \
@@ -120,16 +118,16 @@
       --disable_nhwc_to_nch
     ```
 
-### BERT-Base, Uncased with SQuAD 1.1
+## BERT-Base, Uncased with SQuAD 1.1
 
-#### Data-set
-   First download the Standford Question Answering Dataset(SQuAD1.1) to some directory $SQUAD_DIR
+### Data-set
+First download the Standford Question Answering Dataset(SQuAD1.1) to some directory $SQUAD_DIR
     * [train-v1.1.json](https://rajpurkar.github.io/SQuAD-explorer/dataset/train-v1.1.json)
     * [dev-v1.1.json](https://rajpurkar.github.io/SQuAD-explorer/dataset/dev-v1.1.json)
     * [evaluate-v1.1.py](https://github.com/allenai/bi-att-flow/blob/master/squad/evaluate-v1.1.py)
 
-#### Fine-tuning
-   Download the Pre-trained Bert base uncased model
+### Fine-tuning
+Download the Pre-trained Bert base uncased model
     ```bash
     $ wget https://storage.googleapis.com/bert_models/2018_10_18/uncased_L-12_H-768_A-12.zip
     $ export BERT_BASE_DIR=/path/to/bert/uncased_L-12_H-768_A-12
@@ -148,7 +146,7 @@
       --output_dir=/tmp/squad_base/
     ```
 
-#### Evaluation
+### Evaluation
     ```bash
     $ python $WORK_DIR/bert/run_squad.py \
       --vocab_file=$BERT_BASE_DIR/vocab.txt \
@@ -167,13 +165,13 @@
     ```bash
     $ python $SQUAD_DIR/evaluate-v1.1.py $SQUAD_DIR/dev-v1.1.json /tmp/squad_base/predictions.json
     ```
-#### Results
+### Results
    Accuracy Metrics
     Exact_match: 81.17313150425733
     F1: 88.49906696207893
 
-#### Export to OpenVino IR
-   Export the saved model from the trained checkpoint
+### Export to OpenVino IR
+Export the saved model from the trained checkpoint
     ```bash
     $ cp squad_export.py $WORK_DIR/bert/
     $ python $WORK_DIR/bert/squad_export.py \
@@ -190,14 +188,14 @@
       --output_dir=/tmp/squad_base/
       --export_dir =/tmp/squad_base/export_model/
     ```
-##### Frozen Graph
+#### Frozen Graph
     ```bash
     $ python3 -m tensorflow.python.tools.freeze_graph \
       --input_saved_model_dir=/tmp/squad_base/exported_model/<saved model folder>/ \
       --output_graph=bert_squad_fp32_graph.pb \
       --output_node_names=unstack
     ```
-##### OpenVino Intermediate Representation
+#### OpenVino Intermediate Representation
     ```bash
     $ python mo.py --framework=tf \
       --input='input_ids_1,input_mask_1,segment_ids_1' \
@@ -209,7 +207,7 @@
       --disable_nhwc_to_nchw
     ```
 
-#### OpenVino Dataset Annotation and Accuracy check
+### OpenVino Dataset Annotation and Accuracy check
     ```bash
     $ convert_annotation squad \
       --testing_file $SQUAD_DIR/dev-v1.1.json \
